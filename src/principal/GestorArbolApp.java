@@ -1,10 +1,9 @@
 package principal;
 
 
-
-
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -22,7 +21,7 @@ public class GestorArbolApp {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			Connection con= DriverManager.getConnection ("jdbc:mysql://"+HOST+ "/"+BBDD,USERNAME,PASSWORD);
 			
-			Statement st= con.createStatement();
+			PreparedStatement preparedSt;
 			Scanner teclado = new Scanner(System.in);
 			final int INSERTAR_ARBOL = 1;
 			final int ELIMINAR_ARBOL = 2;
@@ -68,11 +67,18 @@ public class GestorArbolApp {
 					//INSERTAR ARBOL
 					//INSERT INTO `arboles_euskadi` (, `nombre_comun`, `nombre_cientifico`, `habitat`, `altura`, `origen`) VALUES (, '', '', '', '', '')
 					
-					String senteciaInsert= ("INSERT INTO `arboles_euskadi` "
-							+ "(`nombre_comun`, `nombre_cientifico`, `habitat`, `altura`, `origen`) VALUES "
-							+ "('"+nombreComun+"', '"+nombreCientifico+"', '"+habitat+"', '"+altura+"', '"+origen+"')");
 					
-					st.execute(senteciaInsert);
+					
+					preparedSt = con.prepareStatement("INSERT INTO `arboles_euskadi` "
+							+ "(`nombre_comun`, `nombre_cientifico`, `habitat`, `altura`, `origen`) VALUES "
+							+ "(?, ?,?,?, ?)");
+					preparedSt.setString(1 , nombreComun);
+					preparedSt.setString(2 , nombreCientifico);
+					preparedSt.setString(3 , habitat);
+					preparedSt.setInt(4 , altura);
+					preparedSt.setString(5 , origen);
+					
+					preparedSt.execute();
 
 					break;
 					
@@ -81,11 +87,11 @@ public class GestorArbolApp {
 					//ELIMINAR ARBOL
 					// "DELETE FROM arboles_euskadi WHERE nombre_comun= 'pino' "
 					System.out.println("Introduce el id del arbol que quieras eliminar");
-					 arbolEliminar=  scan.nextInt(); 
+					arbolEliminar= scan.nextInt();
 					
-					String sentenciaDelete = "DELETE FROM arboles_euskadi WHERE id= '"+arbolEliminar+"' ";
-					st.execute(sentenciaDelete);
-					
+					preparedSt = con.prepareStatement("DELETE FROM arboles_euskadi WHERE id = ?");
+					preparedSt.setInt(1,arbolEliminar);
+					preparedSt.execute();
 					break;
 				case MODIFICAR_ARBOL:
 					//modificar arbol
@@ -95,6 +101,7 @@ public class GestorArbolApp {
 					String nuevoNombreCi;
 					String nuevoHabitat;
 					int nuevaAltura;
+					String nuevoOrigen;
 					System.out.println("Introduce el id del arbol que quieras modificar");
 					arbolModificar= scan.nextInt();
 					scan.nextLine();
@@ -107,22 +114,33 @@ public class GestorArbolApp {
 					System.out.println("Introduce el nuevo habitat");
 					nuevoHabitat=scan.nextLine();
 					
-					System.out.println("Introduce el nuevo nueva altura");
+					System.out.println("Introduce la nueva altura");
 					nuevaAltura=scan.nextInt();
+					
+					System.out.println("Introduce el nuevo origen");
+					scan.nextLine();
+					nuevoOrigen=scan.nextLine();
 					
 					
 					//UPDATE `arboles_euskadi` SET `nombre_comun` = 'dddd', `nombre_cientifico` = 'jj', `habitat` = 'sss', `origen` = 'gg' WHERE `arboles_euskadi`.`id` = 3
 
-					String senteciaUpdate="UPDATE `arboles_euskadi` SET `nombre_comun` = '"+nuevoNombreCo+"',"
-				    + " `nombre_cientifico` = '"+ nuevoNombreCi+"', `habitat` = '"+nuevoHabitat+"', `origen` = '"+nuevaAltura+"' "
-					+ "WHERE `arboles_euskadi`.`id` ='"+arbolModificar+"'";
 					
-					st.executeUpdate(senteciaUpdate);
+					preparedSt = con.prepareStatement("UPDATE arboles_euskadi SET nombre_comun = ?,"
+						    + " nombre_cientifico = ?, habitat = ?, altura = ?, origen = ? "
+							+ "WHERE arboles_euskadi.id = ?");
+					preparedSt.setString(1,nuevoNombreCo );
+					preparedSt.setString(2,nuevoNombreCi );
+					preparedSt.setString(3,nuevoHabitat );
+					preparedSt.setInt(4,nuevaAltura );
+					preparedSt.setString(5,nuevoOrigen );
+					preparedSt.setInt(6,arbolModificar );
+					preparedSt.executeUpdate();
 					
 					break;
 				case VISUALIZAR_ARBOLES:
 					String senteciaSelect="SELECT * FROM arboles_euskadi";
-					ResultSet resultado =st.executeQuery(senteciaSelect);
+					Statement st = con.createStatement();
+					ResultSet resultado = st.executeQuery(senteciaSelect);	
 					while (resultado.next()) {
 						System.out.println(
 				    resultado.getInt(1) + "-" +resultado.getString(2)+ " " 
@@ -130,10 +148,6 @@ public class GestorArbolApp {
 					+resultado.getInt(5) + " " +resultado.getString(6)
 					);
 					}
-				
-				
-					
-					
 					
 					break;
 				case SALIR:
