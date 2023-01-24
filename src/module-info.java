@@ -6,4 +6,5 @@
  *
  */
 module Arboles_Euskadi {
+	requires java.sql;
 }
