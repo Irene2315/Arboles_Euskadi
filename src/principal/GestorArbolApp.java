@@ -81,7 +81,7 @@ public class GestorArbolApp {
 					//ELIMINAR ARBOL
 					// "DELETE FROM arboles_euskadi WHERE nombre_comun= 'pino' "
 					System.out.println("Introduce el id del arbol que quieras eliminar");
-					arbolEliminar= scan.nextInt();
+					 arbolEliminar=  scan.nextInt(); 
 					
 					String sentenciaDelete = "DELETE FROM arboles_euskadi WHERE id= '"+arbolEliminar+"' ";
 					st.execute(sentenciaDelete);
