@@ -6,7 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -20,12 +20,15 @@ public class GestorArbolApp {
 	
 	public static void run() throws ClassNotFoundException, SQLException {
 		Scanner scan = new Scanner (System.in);
+		Arbol arbol;
+		PreparedStatement preparedSt;
+		
+		
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			Connection con= DriverManager.getConnection ("jdbc:mysql://"+HOST+ "/"+BBDD,USERNAME,PASSWORD);
-			Arbol arbol = new Arbol();
-			PreparedStatement preparedSt;
-			Scanner teclado = new Scanner(System.in);
+			
+			
 			final int INSERTAR_ARBOL = 1;
 			final int ELIMINAR_ARBOL = 2;
 			final int MODIFICAR_ARBOL = 3;
@@ -42,7 +45,7 @@ public class GestorArbolApp {
 				System.out.println(SALIR + ". Salir");
 				System.out.println("*******************");
 				System.out.println("Elije una de las opciones");
-				opcion_menu = teclado.nextInt();
+				opcion_menu = scan.nextInt();
 
 				switch (opcion_menu) {
 				
@@ -165,9 +168,9 @@ public class GestorArbolApp {
 					
 					break;
 				case VISUALIZAR_ARBOLES:
-					String senteciaSelect="SELECT * FROM arboles_euskadi";
-					Statement st = con.createStatement();
-					ResultSet resultado = st.executeQuery(senteciaSelect);	
+				
+					preparedSt = con.prepareStatement("SELECT * FROM arboles_euskadi");
+					ResultSet resultado= preparedSt.executeQuery();
 					
 					ArrayList<Arbol> arboles = new ArrayList<Arbol>();
 					while (resultado.next()) {
@@ -192,7 +195,7 @@ public class GestorArbolApp {
 				}
 				System.out.println("");
 			} while (opcion_menu != SALIR);
-			teclado.close();
+			scan.close();
 
 			
 			
