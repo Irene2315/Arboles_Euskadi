@@ -152,9 +152,6 @@ public class GestorArbolApp {
 					
 					//UPDATE `arboles_euskadi` SET `nombre_comun` = 'dddd', `nombre_cientifico` = 'jj', `habitat` = 'sss', `origen` = 'gg' WHERE `arboles_euskadi`.`id` = 3
 
-					
-					
-					
 					preparedSt = con.prepareStatement("UPDATE arboles_euskadi SET nombre_comun = ?,"
 						    + " nombre_cientifico = ?, habitat = ?, altura = ?, origen = ? "
 							+ "WHERE arboles_euskadi.id = ?");
@@ -196,9 +193,6 @@ public class GestorArbolApp {
 				System.out.println("");
 			} while (opcion_menu != SALIR);
 			scan.close();
-
-			
-			
 		
 			
 			
